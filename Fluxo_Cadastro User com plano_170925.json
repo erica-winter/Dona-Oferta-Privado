@@ -1,0 +1,154 @@
+{
+  "name": "Cadastro User com plano",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cadastro-usuario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5d4b10fb-c283-436b-9560-9b164bc3c4a0",
+      "name": "Webhook Cadastro",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        -32
+      ],
+      "webhookId": "1ff860bd-0a8a-4e43-bdff-f2f11813daef"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "258437d1-ab44-4bfc-aac3-b19139c29292",
+      "name": "Processar Dados",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        -208,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "table": "usuarios",
+        "columns": {
+          "columns": [
+            {
+              "name": "telefone_whatsapp",
+              "value": "={{ $json.telefone }}"
+            },
+            {
+              "name": "cep",
+              "value": "={{ $json.cep }}"
+            },
+            {
+              "name": "cpf",
+              "value": "={{ $json.cpf }}"
+            },
+            {
+              "name": "formato_oferta_preferido",
+              "value": "={{ $json.formato_preferido }}"
+            },
+            {
+              "name": "plano",
+              "value": "={{ $json.plano_atual }}"
+            },
+            {
+              "name": "data_fim_trial",
+              "value": "={{ $json.plano_trial_fim }}"
+            },
+            {
+              "name": "ativo",
+              "value": true
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "id": "9c91b335-607c-4218-9738-c155b0efe627",
+      "name": "Inserir Usuário no Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -32
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "jQtJl3QWWO6TD3BU",
+          "name": "Credencial Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "url": "http://[31.97.87.216]:8081/message/sendText/default",
+        "options": {}
+      },
+      "id": "65d21175-66f4-4e01-b204-445887fedaa0",
+      "name": "Enviar Confirmação WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -32
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "qFt2p2U8faEpGTz6",
+          "name": "Credencial Evolution"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Cadastro": {
+      "main": [
+        [
+          {
+            "node": "Processar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Dados": {
+      "main": [
+        [
+          {
+            "node": "Inserir Usuário no Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Usuário no Supabase": {
+      "main": [
+        [
+          {
+            "node": "Enviar Confirmação WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bf0ba5f4-efc4-4c2a-9bfd-eeb30e2c437b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "272cce8fc0734a5b88fc72593c2bf0ac21199d31350ff75ad4c8ac06e3fa2f93"
+  },
+  "id": "1JCioH7gDpHTyHxV",
+  "tags": []
+}
