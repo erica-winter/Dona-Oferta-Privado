@@ -1,0 +1,116 @@
+{
+  "name": "Envio de Ofertas com controle de plano",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ef3fbbfc-a51c-48e6-956f-0a280af4cd29",
+      "name": "Trigger a cada 12h",
+      "type": "n8n-nodes-base.schedule",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM usuarios WHERE ativo = true;",
+        "additionalFields": {}
+      },
+      "id": "1eefdcb1-933e-48a3-9933-bf989a33af05",
+      "name": "Buscar Usuários Ativos",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "6297b2d4-783b-4805-a296-882ad6976de0",
+      "name": "Processar Cada Usuário",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.plano }}",
+              "value2": "trial"
+            }
+          ]
+        }
+      },
+      "id": "0c8f74b0-9d86-4812-97a1-783dc42d2d85",
+      "name": "Verificar Tipo de Plano",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "content": "TODO: Lógica para buscar e formatar as ofertas para planos Trial/Premium (ilimitado )"
+      },
+      "id": "a3973f0a-87f0-406b-aecf-9e95c9f7ed71",
+      "name": "Buscar Ofertas Trial/Premium",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "TODO: Lógica para buscar e formatar as ofertas para plano Básico (limite de 5)"
+      },
+      "id": "f1fa1e5b-7fa4-48df-8238-8b6118c636e2",
+      "name": "Buscar Ofertas Básico",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "content": "TODO: Enviar ofertas formatadas para o WhatsApp do usuário: {{$json.telefone_whatsapp}}"
+      },
+      "id": "e76bafef-f7eb-48e7-afa9-5853e903e833",
+      "name": "Enviar Ofertas WhatsApp",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        224,
+        112
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8afcc144-4bce-45c2-b133-7ad472f3d636",
+  "meta": {
+    "instanceId": "272cce8fc0734a5b88fc72593c2bf0ac21199d31350ff75ad4c8ac06e3fa2f93"
+  },
+  "id": "S9FKt5JksFq6ab20",
+  "tags": []
+}

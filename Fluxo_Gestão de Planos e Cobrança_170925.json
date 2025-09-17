@@ -1,0 +1,159 @@
+{
+  "name": "Gestão de Planos e Cobrança",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT telefone_whatsapp FROM usuarios WHERE plano = 'trial' AND data_fim_trial < NOW() AND ativo = true;",
+        "additionalFields": {}
+      },
+      "id": "3c0def3c-aff8-449a-b656-00213616dbef",
+      "name": "Buscar Trials Expirados",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "jQtJl3QWWO6TD3BU",
+          "name": "Credencial Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "6c119802-44fe-4dea-aef6-9f8740c70cd0",
+      "name": "Processar Trial Expirado",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://[31.97.87.216]:8081/message/sendText/default",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "23cbc2b2-baec-468c-b125-b3056bb7cb4e",
+      "name": "Notificar Trial Expirado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        672,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "qFt2p2U8faEpGTz6",
+          "name": "Credencial Evolution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeUpdate",
+        "additionalFields": {}
+      },
+      "id": "3cf1a1fa-6049-4553-8122-f75f728720c5",
+      "name": "Desativar Usuário Expirado",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        880,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "jQtJl3QWWO6TD3BU",
+          "name": "Credencial Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aab4a6ae-0f73-4721-aba1-086498f55855",
+      "name": "Todo dia 05am"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Todo dia 05am": {
+      "main": [
+        [
+          {
+            "node": "Buscar Trials Expirados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Trials Expirados": {
+      "main": [
+        [
+          {
+            "node": "Processar Trial Expirado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Trial Expirado": {
+      "main": [
+        [
+          {
+            "node": "Notificar Trial Expirado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Trial Expirado": {
+      "main": [
+        [
+          {
+            "node": "Desativar Usuário Expirado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "605ca684-86a9-4339-92bb-ea568d1815e6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "272cce8fc0734a5b88fc72593c2bf0ac21199d31350ff75ad4c8ac06e3fa2f93"
+  },
+  "id": "6HCWPmQI2w2cbobm",
+  "tags": []
+}
